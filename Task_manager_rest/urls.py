@@ -19,5 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('taskmanager.urls')),  # Подключаем маршруты приложения taskmanager
+    path('api/', include('taskmanager.urls')),  # Подключение маршрутов из taskmanager
 ]
