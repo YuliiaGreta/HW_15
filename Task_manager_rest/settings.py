@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'taskmanager',
     'django_filters',
+    'task_manager_hw13',
+
 ]
 
 MIDDLEWARE = [
