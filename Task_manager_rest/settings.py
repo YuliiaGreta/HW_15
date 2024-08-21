@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'taskmanager',
     'django_filters',
     'task_manager_hw13',
+    'task_manager_hw14',
 
 ]
 
@@ -119,6 +120,12 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+# Настройки Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

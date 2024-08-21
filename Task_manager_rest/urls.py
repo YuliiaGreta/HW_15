@@ -16,9 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from task_manager_hw14.views import CategoryViewSet, TaskViewSet
+
+# Создаем роутер и регистрируем наши маршруты
+router = DefaultRouter()
+router.register(r'categories', CategoryViewSet)
+router.register(r'tasks', TaskViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('taskmanager.urls')), # Подключение маршрутов из taskmanager
-    path('api/v2/', include('task_manager_hw13.urls')), # Новые маршруты  задания HW13
+    path('api/', include('taskmanager.urls')), # маршруты из taskmanager
+    path('api/v2/', include('task_manager_hw13.urls')), # маршруты HW13
+    path('api/v3/', include(router.urls)), # маршруты для HW14
 ]
