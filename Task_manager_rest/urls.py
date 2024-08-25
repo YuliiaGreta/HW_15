@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/', include('taskmanager.urls')), # маршруты из taskmanager
     path('api/v2/', include('task_manager_hw13.urls')), # маршруты HW13
     path('api/v3/', include(router.urls)), # маршруты для HW14
+    path('api/v4/', include('homework_15_1.urls')), # маршруты для Homework 15.1
 ]

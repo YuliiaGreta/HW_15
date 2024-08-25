@@ -2,18 +2,20 @@ from django.db import models
 
 # Create your models here.
 
-from django.db import models
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from task_manager_hw14.models import Task, Category
+from task_manager_hw14.serializers import TaskSerializer, CategorySerializer
 
-class Category(models.Model):
-    name = models.CharField(max_length=100)
+class TaskListAPIView(APIView):
+    def get(self, request):
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
 
-    def __str__(self):
-        return self.name
-
-class Task(models.Model):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title
+class CategoryListAPIView(APIView):
+    def get(self, request):
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)

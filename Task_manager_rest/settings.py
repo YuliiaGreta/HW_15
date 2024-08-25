@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_filters',
     'task_manager_hw13',
     'task_manager_hw14',
+    'homework_15_1',
 
 ]
 

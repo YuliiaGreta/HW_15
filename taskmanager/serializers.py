@@ -2,55 +2,58 @@ from rest_framework import serializers
 from .models import Task, SubTask, Category
 from datetime import datetime
 
+# Сериализатор для Task
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['id', 'title', 'description', 'status', 'deadline']
 
-# Добавить SubTaskCreateSerializer задание 1 HW  12
+# Сериализатор для создания SubTask
 class SubTaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubTask # использую модель SubTask
-        fields = ['id', 'title', 'description', 'created_at', 'task'] #Указываю поля
-        read_only_fields = ['created_at'] #Делаю это поле сreated_at доступным только для чтения
+        model = SubTask  # используем модель SubTask
+        fields = ['id', 'title', 'description', 'created_at', 'task']  # указываем поля
+        read_only_fields = ['created_at']  # поле created_at доступно только для чтения
 
-# Создание CategoryCreateSerializer с проверкой уникальности HW 12 numer 2
+# Сериализатор для создания Category с проверкой уникальности
 class CategoryCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category #исп.модель Сategory
-        fields = ['id', 'title', 'description'] # Указала поля
+        model = Category  # используем модель Category
+        fields = ['id', 'title', 'description']  # указываем поля
 
-def create(self, validated_data):
-    title = validated_data.pop('title')
-    if Category.objects.filter(title=title).exists(): # Проверяю на наличие кате-и с таким же названием
-       raise serializers.ValidationError('Category already exists')
-    return super(),create(validated_data)
-def update(self, instance, validated_data):
-    title = validated_data.get('title', instance.title)
-    if Category.objects.filter(title=title).exclude(id=instance).exists():
-        raise serializers.ValidationError('Category already exists')
-    return super(),update(instance,validated_data)
+    def create(self, validated_data):
+        title = validated_data.get('title')
+        if Category.objects.filter(title=title).exists():  # проверяем на наличие категории с таким же названием
+            raise serializers.ValidationError('Category already exists')
+        return super().create(validated_data)
 
-# Создание вложенного сериализатора TaskDetailSerializer HW 12 - 3
+    def update(self, instance, validated_data):
+        title = validated_data.get('title', instance.title)
+        if Category.objects.filter(title=title).exclude(id=instance.id).exists():
+            raise serializers.ValidationError('Category already exists')
+        return super().update(instance, validated_data)
 
+# Сериализатор для SubTask
 class SubTaskSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubTask #
+        model = SubTask
         fields = ['id', 'title', 'description', 'created_at', 'task']
 
+# Сериализатор для подробного отображения Task с вложенными SubTasks
 class TaskDetailSerializer(serializers.ModelSerializer):
-    subtasks = SubTaskSerializer(many=True, read_only=True) # Вложен сериализатор для подзадач
+    subtasks = SubTaskSerializer(many=True, read_only=True)  # вложенный сериализатор для подзадач
+
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'status', 'deadline', 'subtasks') # Указ поля, включая подзадачи
+        fields = ['id', 'title', 'description', 'status', 'deadline', 'subtasks']  # указываем поля, включая подзадачи
 
-# Валидация поля deadline в TaskCreateSerializer HW 12 - 4
+# Сериализатор для создания Task с валидацией поля deadline
 class TaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'status', 'deadline']  # Указываем поля
+        fields = ['id', 'title', 'description', 'status', 'deadline']
 
-        def validate_deadline(self, value):
-            if value < datetime.now().date():  # Проверяем, чтобы дата не была в прошлом
-                raise serializers.ValidationError('Deadline must be in the future')
-            return value
+    def validate_deadline(self, value):
+        if value < datetime.now().date():  # проверяем, чтобы дата не была в прошлом
+            raise serializers.ValidationError('Deadline must be in the future')
+        return value

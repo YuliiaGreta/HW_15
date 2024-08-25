@@ -4,6 +4,7 @@ from django.test import TestCase
 import json
 import os
 import unittest
+from homework_15_1.text_utils import clean_text, remove_stop_words
 
 
 class TestFileOperations(unittest.TestCase):
@@ -76,3 +77,7 @@ class TestTextProcessing(unittest.TestCase):
 
     def test_remove_stop_words_no_stop_words(self):
         self.assertEqual(remove_stop_words("hello world", []), "hello world")
+
+if __name__ == '__main__':
+    unittest.main(exit=False)
+    print("Hello, World!", flush=True)
