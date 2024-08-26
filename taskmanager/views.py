@@ -1,22 +1,21 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
-from django.shortcuts import render
 from rest_framework import generics
-from .models import Task, SubTask  # Добавляем импорт модели SubTask
-from .serializers import TaskSerializer, SubTaskCreateSerializer  # Добавляем импорт SubTaskCreateSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from .models import Task, SubTask
+from .serializers import TaskSerializer, SubTaskCreateSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Count, Q
+from django.http import Http404
 from django.utils import timezone
-from rest_framework import filters
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Count
+from rest_framework import status
 
 # Эндпойнт для создания задачи
 class TaskCreateView(generics.CreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]  # Только аутентифицированные пользователи
 
 # Эндпойнт для получения списка задач с фильтрами и пагинацией
 class TaskListView(generics.ListAPIView):
@@ -26,9 +25,12 @@ class TaskListView(generics.ListAPIView):
     filterset_fields = ['status', 'deadline']
     ordering_fields = ['deadline']
     ordering = ['deadline']
+    permission_classes = [IsAuthenticated]  # Только аутентифицированные пользователи
 
 # Эндпойнт для получения статистики задач
 class TaskStatsView(APIView):
+    permission_classes = [IsAdminUser]  # Только администраторы
+
     def get(self, request):
         total_tasks = Task.objects.count()
         status_counts = Task.objects.values('status').annotate(count=Count('status'))
@@ -42,6 +44,8 @@ class TaskStatsView(APIView):
 
 # Новый эндпойнт для создания и получения списка подзадач
 class SubTaskListCreateView(APIView):
+    permission_classes = [IsAuthenticated]  # Только аутентифицированные пользователи
+
     def get(self, request):
         subtasks = SubTask.objects.all()  # Получаем все подзадачи
         serializer = SubTaskCreateSerializer(subtasks, many=True)  # Преобразуем их в JSON
@@ -56,6 +60,8 @@ class SubTaskListCreateView(APIView):
 
 # Новый эндпойнт для получения, обновления и удаления конкретной подзадачи
 class SubTaskDetailUpdateDeleteView(APIView):
+    permission_classes = [IsAuthenticated]  # Только аутентифицированные пользователи
+
     def get_object(self, pk):
         try:
             return SubTask.objects.get(pk=pk)  # Получаем подзадачу по ID
@@ -78,4 +84,4 @@ class SubTaskDetailUpdateDeleteView(APIView):
     def delete(self, request, pk):
         subtask = self.get_object(pk)  # Получаем подзадачу
         subtask.delete()  # Удаляем подзадачу
-        return Response(status=status.HTTP_204_NO_CONTENT)  # Возвращаем успешный статус
+        return Response(status=status.HTTP_204_NO_CONTENT)

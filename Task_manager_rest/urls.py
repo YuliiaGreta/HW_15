@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from task_manager_hw14.views import CategoryViewSet, TaskViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 # Создаем роутер и регистрируем наши маршруты
 router = DefaultRouter()
@@ -26,8 +27,12 @@ router.register(r'tasks', TaskViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('taskmanager.urls')), # маршруты из taskmanager
-    path('api/v2/', include('task_manager_hw13.urls')), # маршруты HW13
-    path('api/v3/', include(router.urls)), # маршруты для HW14
-    path('api/v4/', include('homework_15_1.urls')), # маршруты для Homework 15.1
+    path('api/', include('taskmanager.urls')),  # маршруты из taskmanager
+    path('api/v2/', include('task_manager_hw13.urls')),  # маршруты HW13
+    path('api/v3/', include(router.urls)),  # маршруты для HW14
+    path('api/v4/', include('homework_15_1.urls')),  # маршруты для Homework 15.1
+
+    # Добавляем маршруты для JWT аутентификации
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
